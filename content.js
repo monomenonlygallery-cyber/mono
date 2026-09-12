@@ -246,8 +246,7 @@ window.MONO_CONTENT = {
   about: {
     sectionLabel: `das studio`,
     title: `ein ort im glockenbach, <strong>der sich gut anfühlt</strong>`,
-    text1: `We follow one rule: treat people the way you'd want to be treated. That's why monó isn't just about removing hair — it's about feeling important and taken care of.`,
-    text2: `— Anna & Alexandra, Monó`
+    text1: `We follow one rule: treat people the way you'd want to be treated. That's why monó isn't just about removing hair — it's about feeling important and taken care of.`
   },
 
   // STUDIO — блок с фотогалереей студии (title содержит <strong>)
@@ -364,7 +363,7 @@ window.MONO_CONTENT = {
 
   // FOOTER — подвал сайта
   footer: {
-    text: `A calm space to feel taken care of. Munich, Glockenbach, Westermühlstraße 21, 80469 München`,
+    text: `A calm space to feel taken care of.`,
     ctaButton: `Termin per WhatsApp`,
     contactTitle: `Kontakt`,
     hoursTitle: `Öffnungszeiten`,
