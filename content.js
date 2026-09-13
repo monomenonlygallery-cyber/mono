@@ -246,7 +246,7 @@ window.MONO_CONTENT = {
   about: {
     sectionLabel: `das studio`,
     title: `ein ort im glockenbach, <strong>der sich gut anfühlt</strong>`,
-    text1: `We follow one rule: treat people the way you'd want to be treated. That's why monó isn't just about removing hair — it's about feeling important and taken care of.`
+    text1: `Wir folgen einer Regel: Menschen so zu behandeln, wie man selbst behandelt werden möchte. Deshalb geht es bei monó nicht nur um Haarentfernung — sondern darum, dass du dich wichtig und gut aufgehoben fühlst.`
   },
 
   // STUDIO — блок с фотогалереей студии (title содержит <strong>)
@@ -315,8 +315,8 @@ window.MONO_CONTENT = {
         answer: `Die meisten beschreiben es als Wärme mit einem leichten Kribbeln, kein starker Schmerz. Das ist eine normale Hautreaktion und ein Zeichen, dass der Laser den Follikel erreicht. Beim Testschuss für 25 € spürst du es selbst.`
       },
       qTestShot: {
-        question: `What happens at the €25 test shot?`,
-        answer: `In 30 minutes you get two things: an honest consultation about what to expect, and a live test shot on small area so you can feel the sensation and see a visible before/after on a small patch. Then — your personal plan with number of sessions and price.`
+        question: `Was passiert beim Testschuss für 25 €?`,
+        answer: `In 30 Minuten bekommst du zwei Dinge: eine ehrliche Beratung dazu, was dich erwartet, und einen echten Testschuss auf einer kleinen Fläche, damit du das Gefühl selbst spürst und ein sichtbares Vorher-Nachher siehst. Danach bekommst du deinen persönlichen Plan mit Sitzungsanzahl und Preis.`
       },
       q4: {
         question: `Gibt es Kontraindikationen, für wen ist es nicht geeignet?`,
@@ -363,7 +363,7 @@ window.MONO_CONTENT = {
 
   // FOOTER — подвал сайта
   footer: {
-    text: `A calm space to feel taken care of.`,
+    text: `Ein ruhiger Ort, an dem du dich gut aufgehoben fühlst.`,
     ctaButton: `Termin per WhatsApp`,
     contactTitle: `Kontakt`,
     hoursTitle: `Öffnungszeiten`,
