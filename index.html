@@ -4,8 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ===== Consent & Analytics (Usercentrics CMP + Google Consent Mode v2 + GA4) ===== -->
+<!-- 1. Default consent state MUST be set before any tracking script loads -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
+
+<!-- 2. Usercentrics CMP — loaded as early as possible, before GA -->
+<script id="usercentrics-cmp"
+src="https://web.cmp.usercentrics.eu/ui/loader.js"
+data-settings-id="x9QGevu92TR6Jk"
+async></script>
+
+<!-- 3. Google Analytics 4 (gtag.js). Respects Consent Mode default above:
+     no analytics_storage / no data is sent until Usercentrics calls
+     gtag('consent','update', {...}) after the user accepts. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KVFVDGKVN0"></script>
+<script>
+gtag('js', new Date());
+gtag('config', 'G-KVFVDGKVN0');
+</script>
+
+<!-- 4. WhatsApp click tracking — fires whatsapp_click on any link to
+     wa.me or whatsapp.com. Uses event delegation so it also covers
+     links added dynamically later. Never blocks navigation. -->
+<script>
+document.addEventListener('click', function (e) {
+  var link = e.target.closest('a[href]');
+  if (!link) return;
+  var href = link.getAttribute('href') || '';
+  if (href.indexOf('wa.me') !== -1 || href.indexOf('whatsapp.com') !== -1) {
+    if (typeof gtag === 'function') {
+      gtag('event', 'whatsapp_click', {
+        'link_url': href,
+        'link_text': (link.textContent || '').trim().slice(0, 100)
+      });
+    }
+  }
+}, true);
+</script>
+
 <!-- ===== SEO: Basis ===== -->
-<title>Laser-Haarentfernung für Frauen in München Glockenbach | monó</title>
+<title>Laser-Haarentfernung in München | monó</title>
 <meta name="description" content="Laser-Haarentfernung für Frauen in München Glockenbach: weiche Haut ohne Stoppeln, eingewachsene Haare und Rasurpickel. Beratung + Testschuss 25 €, Preise ab 45 €. Termin per WhatsApp.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="icon" type="image/png" href="favicon.png">
