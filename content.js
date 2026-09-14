@@ -163,8 +163,8 @@ window.MONO_CONTENT = {
       },
       cost: {
         label: `Kosten über 5 Jahre (Beine komplett)`,
-        laser: `ca. 900 € im ersten Jahr`,
-        shave: `ca. 600 € + 150 Stunden`,
+        laser: `ca. 1.600 € (900 € + 178 €/Jahr)`,
+        shave: `ca. 200 € (Rasierer + Schaum)`,
         wax: `ca. 3.000 € (60 Termine)`
       },
       ingrownHairs: {
