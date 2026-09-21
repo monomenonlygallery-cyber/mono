@@ -62,6 +62,52 @@ if (!window.__monoWaTrackingBound) {
 }
 </script>
 
+<!-- 5. Meta (Facebook) Pixel. Manual blocking: inert (type="text/plain")
+     until Usercentrics activates the "Facebook Pixel" service on user
+     consent, then swaps it to a real executable script — same pattern
+     as Google Analytics above. Existing Google Analytics code is left
+     completely untouched; this is a separate, independent block. -->
+<script type="text/plain" data-usercentrics="Facebook Pixel">
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1648751002869365');
+fbq('track', 'PageView');
+</script>
+
+<!-- 6. Meta Pixel — Lead event on WhatsApp-button clicks. Kept as its
+     own independent listener (not merged into the whatsapp_click/GA4
+     one above), per spec: existing Google Analytics code must not be
+     touched. Only fires once the "Facebook Pixel" service has been
+     consented via Usercentrics (script tag above is no longer
+     type="text/plain"); never blocks navigation — every WhatsApp link
+     on this site already opens in a new tab (target="_blank"), so no
+     preventDefault/delay trick is needed. -->
+<script>
+if (!window.__monoFbPixelWaTrackingBound) {
+  window.__monoFbPixelWaTrackingBound = true;
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (href.indexOf('wa.me') === -1 && href.indexOf('whatsapp.com') === -1) return;
+    var fbScript = document.querySelector('script[data-usercentrics="Facebook Pixel"]');
+    var fbConsented = fbScript && fbScript.type !== 'text/plain';
+    if (fbConsented && typeof fbq === 'function') {
+      fbq('track', 'Lead', {
+        content_name: link.getAttribute('data-cta-name') || 'whatsapp_click',
+        content_category: 'whatsapp'
+      });
+    }
+  }, true);
+}
+</script>
+
 <!-- ===== SEO: Basis ===== -->
 <title>Laser-Haarentfernung in München | monó</title>
 <meta name="description" content="Laser-Haarentfernung für Frauen in München Glockenbach: weiche Haut ohne Stoppeln, eingewachsene Haare und Rasurpickel. Beratung + Testschuss 25 €, Preise ab 45 €. Termin per WhatsApp.">
@@ -1203,7 +1249,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
         <button data-lang="en" lang="en">EN</button>
         <button data-lang="uk" lang="uk">UA</button>
       </div>
-      <a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg><span data-i18n="nav.cta" data-content="nav.bookButton">Termin buchen</span></a>
+      <a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-cta-name="header_termin-buchen"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg><span data-i18n="nav.cta" data-content="nav.bookButton">Termin buchen</span></a>
       <button class="burger" aria-label="Menü" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
     </div>
   </nav>
@@ -1218,13 +1264,13 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
     <img class="skn-logo" src="mono-logo.webp" width="1436" height="402" alt="monó — Laser-Haarentfernung München">
     <h1 data-i18n="bn.h1" data-content="hero.title">Haut, die sich <strong>gut anfühlt.</strong></h1>
     <p class="skn-sub" data-i18n="bn.tag" data-content="hero.tagline">Laser-Haarentfernung · Glockenbach, München</p>
-    <a class="btn skn-btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="bn.cta" data-content="hero.ctaButton">Book via WhatsApp</a>
+    <a class="btn skn-btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="bn.cta" data-content="hero.ctaButton" data-cta-name="hero_book-via-whatsapp">Book via WhatsApp</a>
   </div>
   <div class="skn-promo">
     <span class="skn-promo-label" data-i18n="bn.badge" data-content="hero.badgeLabel">Beratung + Testschuss</span>
     <div class="skn-promo-price">25&nbsp;€</div>
     <p class="skn-promo-sub" data-i18n="bn.sub2" data-content="hero.badgeSubtitle">Spür den Laser, bevor du dich entscheidest.</p>
-    <a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.ofrcta" data-content="prices.testShotButton">Testschuss buchen</a>
+    <a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.ofrcta" data-content="prices.testShotButton" data-cta-name="hero_testschuss-buchen">Testschuss buchen</a>
   </div>
 </section>
 
@@ -1241,7 +1287,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
         <li><em data-i18n="bn.l2" data-content="hero.bullet2">Du spürst selbst: ein kurzes, warmes Zwicken, mehr nicht</em></li>
         <li><em data-i18n="bn.l3" data-content="hero.bullet3">Du gehst mit einem Plan nach Hause: Sitzungen, Abstände, Preis</em></li>
       </ul>
-      <a class="btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.ofrcta" data-content="prices.testShotButton">Testschuss buchen</a>
+      <a class="btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.ofrcta" data-content="prices.testShotButton" data-cta-name="offer_testschuss-buchen">Testschuss buchen</a>
     </div>
   </div>
 </section>
@@ -1287,7 +1333,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
 
     <div class="pkg" style="margin-top:28px">
         <p><strong data-i18n="pr.pkgh" data-content="prices.customZoneTitle">Deine Zone ist nicht dabei?</strong> <span data-i18n="pr.pkgp" data-content="prices.customZoneText">Kinn, Wangen, Bauch, Rücken, Po, Ganzkörper: fast alles ist möglich. Schreib uns kurz, wir schicken dir den Preis.</span></p>
-        <a class="btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.cta" data-content="prices.customZoneButton">Preis anfragen</a>
+        <a class="btn" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="pr.cta" data-content="prices.customZoneButton" data-cta-name="preise_preis-anfragen">Preis anfragen</a>
       </div>
     <p class="note" data-i18n="pr.note" data-content="prices.note">Alle Preise inkl. MwSt.</p>
   </div>
@@ -1394,7 +1440,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
 <section class="cta-band">
   <div class="wrap">
     <div><h2 data-i18n="cb.h" data-content="ctaBand.title">noch unsicher? <strong>fang mit dem testschuss an.</strong></h2><p data-i18n="cb.p" data-content="ctaBand.text">25 €, 30 Minuten, deine Zone. Du spürst es selbst und entscheidest in Ruhe.</p></div>
-    <a class="btn btn-lg" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="cb.cta" data-content="ctaBand.button">Testschuss buchen</a>
+    <a class="btn btn-lg" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="cb.cta" data-content="ctaBand.button" data-cta-name="ctaband_testschuss-buchen">Testschuss buchen</a>
   </div>
 </section>
 
@@ -1436,7 +1482,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
     <div>
       <span class="mono" data-i18n="bk.k" data-content="booking.sectionLabel">termin</span><h2 data-i18n="bk.h2" data-content="booking.title">deine haut <strong>ist einen termin</strong> entfernt.</h2>
       <p class="lead" data-i18n="bk.p" data-content="booking.intro">Kein Formular, kein Rückruf. Eine WhatsApp-Nachricht reicht, wir melden uns meist innerhalb weniger Stunden. Erster Termin: Beratung + Testschuss für 25 €.</p>
-      <div class="hero-cta"><a class="btn btn-lg yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="bk.cta" data-content="booking.ctaButton">Jetzt per WhatsApp buchen</a></div>
+      <div class="hero-cta"><a class="btn btn-lg yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="bk.cta" data-content="booking.ctaButton" data-cta-name="kontakt_jetzt-per-whatsapp-buchen">Jetzt per WhatsApp buchen</a></div>
       <p class="addr"><strong>monó</strong><br><span data-content="contact.street">Westermühlstraße 21</span><br><span data-content="contact.postalCityBooking">80469 München, Glockenbach</span><br><a href="tel:+4915202437777">+49 1520 243 7777</a></p>
     </div>
   </div>
@@ -1474,7 +1520,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
       <div>
         <img src="mono-logo-white.webp" width="1436" height="415" alt="monó">
         <p data-i18n="ft.p" data-content="footer.text">Ein ruhiger Ort, an dem du dich gut aufgehoben fühlst.</p>
-        <p style="margin-top:14px"><a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="ft.cta" data-content="footer.ctaButton">Termin per WhatsApp</a></p>
+        <p style="margin-top:14px"><a class="btn yellow" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" data-i18n="ft.cta" data-content="footer.ctaButton" data-cta-name="footer_termin-per-whatsapp">Termin per WhatsApp</a></p>
       </div>
       <div>
         <h4 data-i18n="ft.contact" data-content="footer.contactTitle">Kontakt</h4>
@@ -1492,7 +1538,7 @@ table.pr{border:none;background:transparent;border-collapse:collapse;width:100%}
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg></a>
+<a class="wa-float" href="https://wa.me/4915202437777?text=Hallo%20mon%C3%B3%21%20Ich%20m%C3%B6chte%20gern%20Beratung%20%2B%20Testschuss%20%2825%20%E2%82%AC%29%20buchen." target="_blank" rel="noopener" aria-label="WhatsApp" data-cta-name="floating_whatsapp-button"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg></a>
 
 <script src="content.js"></script>
 <script src="content-loader.js"></script>
