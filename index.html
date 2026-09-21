@@ -31,6 +31,7 @@ async></script>
      as a second layer while the tags remain blocked. -->
 <script type="text/plain" data-usercentrics="Google Analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-KVFVDGKVN0"></script>
 <script type="text/plain" data-usercentrics="Google Analytics">
+window.__monoGaConsented = true;
 gtag('js', new Date());
 gtag('config', 'G-KVFVDGKVN0');
 </script>
@@ -39,9 +40,16 @@ gtag('config', 'G-KVFVDGKVN0');
      wa.me or whatsapp.com. Uses event delegation (bound once, guarded
      against double-binding) so every real click fires exactly once.
      Never blocks navigation. Only actually sends data if the user has
-     consented: the GA4 script tags stay type="text/plain" (Manual
-     Blocking) until Usercentrics activates them, so we check that
-     state directly instead of assuming gtag() means "allowed". -->
+     consented: we check window.__monoGaConsented, a flag set by the
+     GA4 config script above — that line only ever runs once Usercentrics
+     has unblocked it, so the flag is a direct, reliable signal of real
+     consent. (We deliberately do not re-query the script tag's own
+     type/attributes here: Usercentrics recreates the script element
+     on activation rather than mutating it in place, and drops the
+     data-usercentrics attribute in the process, so re-reading it after
+     the fact silently and permanently reports "not consented" even
+     when the visitor did consent — gtag() itself is no help either,
+     since the stub above always exists regardless of consent.) -->
 <script>
 if (!window.__monoWaTrackingBound) {
   window.__monoWaTrackingBound = true;
@@ -50,9 +58,7 @@ if (!window.__monoWaTrackingBound) {
     if (!link) return;
     var href = link.getAttribute('href') || '';
     if (href.indexOf('wa.me') === -1 && href.indexOf('whatsapp.com') === -1) return;
-    var gaScript = document.querySelector('script[data-usercentrics="Google Analytics"]');
-    var gaConsented = gaScript && gaScript.type !== 'text/plain';
-    if (gaConsented && typeof gtag === 'function') {
+    if (window.__monoGaConsented && typeof gtag === 'function') {
       gtag('event', 'whatsapp_click', {
         'link_url': href,
         'link_text': (link.textContent || '').trim().slice(0, 100)
@@ -83,11 +89,12 @@ fbq('track', 'PageView');
 <!-- 6. Meta Pixel — Lead event on WhatsApp-button clicks. Kept as its
      own independent listener (not merged into the whatsapp_click/GA4
      one above), per spec: existing Google Analytics code must not be
-     touched. Only fires once the "Facebook Pixel" service has been
-     consented via Usercentrics (script tag above is no longer
-     type="text/plain"); never blocks navigation — every WhatsApp link
-     on this site already opens in a new tab (target="_blank"), so no
-     preventDefault/delay trick is needed. -->
+     touched. Fires only once window.fbq actually exists — the base
+     Pixel snippet above is inert (type="text/plain") until Usercentrics
+     unblocks it, so fbq is undefined pre-consent and becomes a real
+     function only after the visitor consents. Never blocks navigation —
+     every WhatsApp link on this site already opens in a new tab
+     (target="_blank"), so no preventDefault/delay trick is needed. -->
 <script>
 if (!window.__monoFbPixelWaTrackingBound) {
   window.__monoFbPixelWaTrackingBound = true;
@@ -96,9 +103,14 @@ if (!window.__monoFbPixelWaTrackingBound) {
     if (!link) return;
     var href = link.getAttribute('href') || '';
     if (href.indexOf('wa.me') === -1 && href.indexOf('whatsapp.com') === -1) return;
-    var fbScript = document.querySelector('script[data-usercentrics="Facebook Pixel"]');
-    var fbConsented = fbScript && fbScript.type !== 'text/plain';
-    if (fbConsented && typeof fbq === 'function') {
+    // Note: we deliberately do NOT check the script tag's type/attributes
+    // here (as the GA4 tracker above does) — Usercentrics recreates the
+    // script element on activation rather than just flipping its type,
+    // so a stale data-usercentrics lookup can silently miss real consent.
+    // window.fbq itself is the reliable signal: the base Pixel snippet is
+    // inert (type="text/plain") until consent, so fbq is only ever
+    // defined once Usercentrics has actually unblocked and run it.
+    if (typeof fbq === 'function') {
       fbq('track', 'Lead', {
         content_name: link.getAttribute('data-cta-name') || 'whatsapp_click',
         content_category: 'whatsapp'
